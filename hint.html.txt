@@ -1,0 +1,234 @@
+<div class="fx-hint-place" style="width:60px;height:60px;display:inline-block;">
+  <style>
+    .fx-hint-place-btn {
+      width:60px;height:60px;border-radius:50%;border:2.5px solid #ffe77c;
+      display:flex;align-items:center;justify-content:center;
+      background:#fffde6;cursor:pointer;user-select:none;transition:filter .15s;
+    }
+    .fx-hint-place-btn img {max-width:40px;max-height:40px;}
+    .fx-hint-place-popup {
+      all:unset; /* reset наследование генили */
+      display:block;position:fixed;left:50vw;top:50vh;transform:translate(-50%,-50%);
+      min-width:240px;max-width:380px;padding:28px 30px 18px 28px;
+      background:#fffde9;border-radius:18px;border:4px solid #ffe370;
+      box-shadow:0 8px 30px #ffd86b96,0 0 0 8px #ffaa2a14 inset;
+      color:#62400f;font-size:1.13em;z-index:2147483646;
+      font-family:'EB Garamond','Montserrat','Georgia',serif;
+      cursor:grab;user-select:none;animation:popfade .39s cubic-bezier(.93,0,.6,1.11);
+    }
+    .fx-hint-place-popup .closebtn{
+      position:absolute;top:7px;right:13px;color:#aa8d25;font-size:1.22em;
+      font-weight:bold;cursor:pointer;background:#fff9de;border-radius:8px;
+      padding:0 9px;box-shadow:0 2px 8px #ffe97e17;transition:.12s;
+    }
+    .fx-hint-place-popup .closebtn:hover {color:#fa6a01;background:#fff3ca;}
+    @keyframes popfade {0%{opacity:0;transform:translate(-50%,-65%) scale(.7);}90%{opacity:1;transform:translate(-50%,-54%) scale(1.08);}100%{opacity:1;transform:translate(-50%,-50%) scale(1);}}
+  </style>
+  <!-- МЕНЯЙ икону и подсказку для каждой кнопки! -->
+  <div class="fx-hint-place-btn">
+    <img src="https://i.postimg.cc/TwzbgfYj/pngwing-com61.png" alt="Подсказка">
+  </div>
+  <script>
+    (function(){
+      var btn = document.currentScript.parentNode.querySelector('.fx-hint-place-btn');
+      var hintText = `<b>Подсказка!</b><br>Любой текст здесь, <b>жирный</b>, <i>курсив</i>, <span style="color:#ffc307">цветной</span>.<br>Окно таскается мышкой.`;
+      var currPopup = null, moving=false,sx=0,sy=0,ox=0,oy=0;
+      btn.onclick = function(){
+        // Удалить прошлые popup от таких же виджетов (чтобы каждая только 1)
+        document.querySelectorAll('.fx-hint-place-popup').forEach(p=>p.remove());
+        // делаем popup:
+        currPopup = document.createElement('div');
+        currPopup.className = 'fx-hint-place-popup';
+        currPopup.innerHTML = `<span class="closebtn">&times;</span>${hintText}`;
+        document.body.appendChild(currPopup);
+        // drag'n'drop
+        currPopup.onmousedown = function(e){
+          if(e.target.classList.contains('closebtn'))return;
+          moving=true;sx=e.clientX;sy=e.clientY;ox=currPopup.offsetLeft;oy=currPopup.offsetTop;
+          currPopup.style.cursor="grabbing";
+        }
+        document.onmousemove = function(e){
+          if(moving){
+            currPopup.style.left=(ox+e.clientX-sx)+'px';
+            currPopup.style.top=(oy+e.clientY-sy)+'px';
+            currPopup.style.transform='';
+          }
+        }
+        document.onmouseup = function(){moving=false;if(currPopup)currPopup.style.cursor="grab";}
+        currPopup.querySelector('.closebtn').onclick=function(){currPopup.remove();}
+      }
+    })();
+  </script>
+</div>
+<div class="fx-final-safe-container" style="all: initial; display: block; box-sizing: border-box; width: 100%; height: 100%; background: #0c0c0c !important; padding: 20px !important;">
+    
+<style>
+    .fx-final-safe-container * { box-sizing: border-box !important; }
+
+    /* Основная карточка редактора */
+    .fx-card-content {
+        background: #161616 !important;
+        border: 1px solid #333 !important;
+        border-radius: 16px;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        /* Увеличиваем отступы внутри темной рамки */
+        padding: 30px !important; 
+        gap: 15px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    }
+
+    .fx-main-title {
+        color: #007bff;
+        font-family: 'Segoe UI', Arial, sans-serif !important;
+        font-weight: 900;
+        font-size: 20px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin: 0 0 10px 0 !important; /* Гарантированный отступ снизу */
+        display: block;
+    }
+
+    .fx-controls-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        flex-shrink: 0;
+        margin-bottom: 5px;
+    }
+
+    .fx-input-box { display: flex; flex-direction: column; gap: 8px; }
+    .fx-input-box label {
+        font-family: 'Segoe UI', Arial, sans-serif !important;
+        font-size: 11px;
+        color: #777;
+        text-transform: uppercase;
+        font-weight: 800;
+    }
+
+    input[type=range] { width: 100%; cursor: pointer; accent-color: #007bff; }
+
+    /* Окно превью */
+    .fx-preview-area {
+        flex-grow: 1;
+        background: #000 !important;
+        border-radius: 10px;
+        border: 1px solid #222 !important;
+        position: relative;
+        overflow: hidden;
+        min-height: 150px;
+    }
+    #particles-js-target { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+    /* Кнопка */
+    .fx-copy-btn {
+        background: #007bff !important;
+        color: #fff !important;
+        border: none !important;
+        padding: 15px !important;
+        border-radius: 10px !important;
+        font-family: 'Segoe UI', Arial, sans-serif !important;
+        font-weight: bold !important;
+        font-size: 14px !important;
+        cursor: pointer !important;
+        text-transform: uppercase;
+        transition: background 0.2s;
+        flex-shrink: 0;
+    }
+    .fx-copy-btn:hover { background: #0056b3 !important; }
+
+    /* Поле кода */
+    .fx-code-result {
+        width: 100% !important;
+        height: 60px !important;
+        background: #050505 !important;
+        color: #4ade80 !important;
+        border: 1px solid #252525 !important;
+        border-radius: 8px !important;
+        padding: 12px !important;
+        font-family: monospace !important;
+        font-size: 11px !important;
+        resize: none !important;
+        flex-shrink: 0;
+        margin-top: 5px;
+    }
+</style>
+
+<div class="fx-card-content">
+    <div class="fx-main-title">Particle Editor</div>
+
+    <div class="fx-controls-grid">
+        <div class="fx-input-box">
+            <label>Количество звёзд</label>
+            <input type="range" id="m-count" min="10" max="400" value="150">
+        </div>
+        <div class="fx-input-box">
+            <label>Размер объектов</label>
+            <input type="range" id="m-size" min="1" max="25" value="6">
+        </div>
+        <div class="fx-input-box">
+            <label>Скорость полёта</label>
+            <input type="range" id="m-speed" min="1" max="15" value="4">
+        </div>
+        <div class="fx-input-box">
+            <label>Дистанция мыши</label>
+            <input type="range" id="m-rep" min="30" max="300" value="120">
+        </div>
+    </div>
+
+    <div class="fx-preview-area">
+        <div id="particles-js-target"></div>
+    </div>
+
+    <button class="fx-copy-btn" id="m-gen-btn">Скопировать IFRAME код</button>
+    <textarea id="m-out" class="fx-code-result" readonly placeholder="Тут появится готовый код..."></textarea>
+</div>
+
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+<script>
+    (function() {
+        const val = (id) => parseInt(document.getElementById(id).value);
+
+        function getFinalCfg() {
+            return {
+                particles: {
+                    number: { value: val('m-count') },
+                    color: { value: ['#FFD700', '#FF00FF', '#00FFFF', '#FFFFFF', '#FF3366'] },
+                    shape: { type: 'star' },
+                    opacity: { value: 0.8, random: true },
+                    size: { value: val('m-size'), random: true },
+                    line_linked: { enable: false },
+                    move: { enable: true, speed: val('m-speed'), direction: 'none', random: true, out_mode: 'out' }
+                },
+                interactivity: {
+                    events: { onhover: { enable: true, mode: 'repulse' } },
+                    modes: { repulse: { distance: val('m-rep'), duration: 0.4 } }
+                }
+            };
+        }
+
+        function refresh() {
+            if (window.particlesJS) {
+                particlesJS('particles-js-target', getFinalCfg());
+            }
+        }
+
+        document.getElementById('m-gen-btn').onclick = function() {
+            const cfg = JSON.stringify(getFinalCfg());
+            const iframe = `<iframe srcdoc="<html><body style='margin:0;background:transparent;overflow:hidden'><div id='p' style='width:100vw;height:100vh'></div><script src='https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js'></\script><script>particlesJS('p',${cfg.replace(/"/g, '&quot;')})</\script></body></html>" style='width:100%;height:100%;border:none;background:transparent'></iframe>`;
+            const out = document.getElementById('m-out');
+            out.value = iframe;
+            out.select();
+            document.execCommand('copy');
+            this.innerText = "ГОТОВО! КОД СКОПИРОВАН";
+            setTimeout(() => { this.innerText = "Скопировать IFRAME код"; }, 2000);
+        };
+
+        document.querySelectorAll('input').forEach(i => i.oninput = refresh);
+        setTimeout(refresh, 600);
+    })();
+</script>
+</div>
